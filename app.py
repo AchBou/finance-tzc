@@ -1,0 +1,125 @@
+from flask import Flask, render_template
+import requests as requests
+import pandas as pd
+from bs4 import BeautifulSoup
+
+app = Flask(__name__)
+
+
+def scarp(url):
+    res = requests.get(url)
+    soup = BeautifulSoup(res.content, 'html.parser')
+    table = soup.find_all('table')[0]
+    df = pd.read_html(str(table))[0]
+    df = df.drop(df.index[-1])
+    return df
+
+
+def to_date(x):
+    return pd.to_datetime(x, format='%d/%m/%Y')
+
+
+def load_data():
+    # Code to load data from the internet
+    url = "https://www.bkam.ma/Marches/Principaux-indicateurs/Marche-obligataire/Marche-des-bons-de-tresor/Marche" \
+          "-secondaire/Taux-de-reference-des-bons-du-tresor"
+    df = scarp(url)
+    df["Taux moyen pondéré"] = df["Taux moyen pondéré"].str.replace(',', '.').str.rstrip("%").astype(float)
+    df['Maturite'] = (to_date(df["Date d'échéance"]) - to_date(df['Date de la valeur'])).dt.days + 1
+    columns = df.columns
+    values = df.to_numpy()
+    return columns, values, df
+
+
+def taux_actuariel(maturites, taux_moyens_pond):
+    taux_actuariels = []
+    for i in range(len(maturites)):
+        if maturites[i] < 1:
+            taux_actuariels.append(((1 + (taux_moyens_pond[i] * maturites[i])) ** (1 / maturites[i])) - 1)
+        else:
+            taux_actuariels.append(taux_moyens_pond[i])
+    return taux_actuariels
+
+
+def zc(maturities, rates):
+    print(rates)
+    if len(rates) != len(maturities):
+        raise ValueError("Les listes de taux actuariels et de maturités doivent avoir la même longueur.")
+    n = len(maturities)
+    taux_zero = []
+    for i in range(n):
+        if maturities[i] <= 1:
+            taux_zero.append(rates[i])
+        else:
+            taux_zero.append(
+                ((1 / ((1 / (1 + rates[i])) - (1 / (1 + taux_zero[-1])) + (1 / ((1 + rates[i]) ** 2)))) ** (1 / 2)) - 1)
+
+    return taux_zero
+
+
+def inter(t: float, t2: float, ech: float, ech1: float, ech2: float) -> float:
+    return ((t2 - t) * (ech1 - ech) / (ech2 - ech)) + t
+
+
+def generate_maturity_list(maturity):
+    mlist = []
+    n = 1
+    year = 365 * n
+    for m in maturity:
+        if m <= year:
+            mlist.append(m)
+        elif m > year:
+            while m > year:
+                mlist.append(year)
+                n = n + 1
+                year = 365 * n
+            mlist.append(m)
+    return mlist
+
+
+def get_first_non_na(li, i):
+    for j, entry in enumerate(li):
+        if entry != 'NA':
+            return j + i
+
+
+def fill_na(tmp_list, maturity_list):
+    for i, entry in enumerate(tmp_list):
+        if entry == 'NA':
+            j = get_first_non_na(tmp_list[i:], i)
+            tmp_list[i] = inter(
+                tmp_list[i - 1],
+                tmp_list[j],
+                maturity_list[i - 1],
+                maturity_list[i],
+                maturity_list[j]
+            )
+    return tmp_list
+
+
+def calculate_data(df):
+    maturity_list = generate_maturity_list(df['Maturite'])
+    tmp_list = []
+    for i, entry in enumerate(maturity_list):
+        if entry in df['Maturite'].values:
+            tmp_list.append(df.loc[df['Maturite'] == entry, 'Taux moyen pondéré'].values[0])
+        else:
+            tmp_list.append('NA')
+    maturities = [m / 365 for m in maturity_list]
+    tmp_list = fill_na(tmp_list, maturities)
+    tmp = [m / 100 for m in tmp_list]
+    ta_list = taux_actuariel(maturities, tmp)
+    tzc_list = zc(maturities, ta_list)
+    return maturity_list, maturities, tmp, ta_list, tzc_list
+
+
+@app.route('/')
+def hello_world():  # put application's code here
+    data = load_data()
+    c_data = calculate_data(data[2])
+    return render_template('index.html', columns=data[0], data=data[1],
+                           maturity=c_data[0], years=c_data[1], tmp=c_data[2], ta=c_data[3], tzc=c_data[4])
+
+
+if __name__ == '__main__':
+    app.run()

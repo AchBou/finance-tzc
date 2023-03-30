@@ -1,0 +1,67 @@
+<head>
+    <link rel="stylesheet" href="../static/styles/main.css">
+    <title>Helllloo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container">
+        <table class="table1">
+    <thead>
+        {% for c in columns %}
+            <th>{{ c }}</th>
+        {% endfor %}
+    </thead>
+    {% for row in data %}
+        <tr>
+            {% for value in row %}
+                <td>{{ value }}</td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+        <table class="table2">
+        <thead>
+            {% for c in ['Maturité.Jour', 'Maturité','Tmp','Taux acturiel','taux ZC'] %}
+                <th>{{ c }}</th>
+            {% endfor %}
+        </thead>
+        {% for m in maturity %}
+            <tr>
+                <td>{{ m }}</td>
+                <td>{{ (m/365) | round(3)  }}</td>
+                <td>{{ tmp[loop.index0] |round(4) }}</td>
+                <td>{{ ta[loop.index0] |round(4)}}</td>
+                <td class="cell-tzc">{{ (tzc[loop.index0]*100) |round(4)}}%</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div class="canvas"><canvas id="myChart"></canvas></div>
+
+<script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ years|tojson }},
+            datasets: [{
+                label: 'Taux Zero Coupon',
+                data: {{ tzc|tojson }},
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+</div>
+</body>

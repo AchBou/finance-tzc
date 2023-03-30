@@ -1,0 +1,27 @@
+body{
+    background-color: #f0cfda;
+}
+
+.container{
+    margin: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 30px;
+    align-items: flex-start;
+}
+
+table{
+    width: 40%;
+    border-collapse: collapse;
+    margin: 0 30px;
+}
+
+th, td {
+  border: 2px solid #8d7979;
+}
+
+.canvas{
+    width: 800px;
+    margin: 10px auto;
+}
+
