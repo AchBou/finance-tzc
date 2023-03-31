@@ -42,7 +42,6 @@ def taux_actuariel(maturites, taux_moyens_pond):
 
 
 def zc(maturities, rates):
-    print(rates)
     if len(rates) != len(maturities):
         raise ValueError("Les listes de taux actuariels et de maturités doivent avoir la même longueur.")
     n = len(maturities)
@@ -113,12 +112,23 @@ def calculate_data(df):
     return maturity_list, maturities, tmp, ta_list, tzc_list
 
 
+def construct_graph_data(years, tzc):
+    years_graph = []
+    tzc_graph = []
+    for i, year in enumerate(years):
+        if year.is_integer():
+            years_graph.append(year)
+            tzc_graph.append((tzc[i]*100))
+    return years_graph, tzc_graph
+
+
 @app.route('/')
 def hello_world():  # put application's code here
     data = load_data()
     c_data = calculate_data(data[2])
+    graph_data = construct_graph_data(c_data[1], c_data[4])
     return render_template('index.html', columns=data[0], data=data[1],
-                           maturity=c_data[0], years=c_data[1], tmp=c_data[2], ta=c_data[3], tzc=c_data[4])
+                           maturity=c_data[0], tmp=c_data[2], ta=c_data[3], tzc=c_data[4], graph_data=graph_data)
 
 
 if __name__ == '__main__':

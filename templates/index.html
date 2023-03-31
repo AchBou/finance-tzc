@@ -4,7 +4,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div class="container">
+    <header>
+        <div class="logo">
+                <img src="{{ url_for('static', filename='images/afriquia-gaz-logo.png') }}" alt="AFRIQUIA GAZ LOGO">
+        </div>
+        <h1>Calcul de taux zéro coupon </h1>
+    </header>
+    <div class="container">
         <table class="table1">
     <thead>
         {% for c in columns %}
@@ -30,23 +36,22 @@
                 <td>{{ m }}</td>
                 <td>{{ (m/365) | round(3)  }}</td>
                 <td>{{ tmp[loop.index0] |round(4) }}</td>
-                <td>{{ ta[loop.index0] |round(4)}}</td>
+                <td>{{ (ta[loop.index0]*100) |round(4)}}%</td>
                 <td class="cell-tzc">{{ (tzc[loop.index0]*100) |round(4)}}%</td>
             </tr>
         {% endfor %}
     </table>
-
-    <div class="canvas"><canvas id="myChart"></canvas></div>
-
+        <div class="canvas"><canvas id="myChart"></canvas></div>
+    </div>
 <script>
     const ctx = document.getElementById('myChart').getContext('2d');
     const myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: {{ years|tojson }},
+            labels: {{ graph_data[0]|tojson }},
             datasets: [{
                 label: 'Taux Zero Coupon',
-                data: {{ tzc|tojson }},
+                data: {{ graph_data[1]|tojson }},
                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1
@@ -54,14 +59,21 @@
         },
         options: {
             scales: {
-                yAxes: [{
+                x:  {
                     ticks: {
                         beginAtZero: true
                     }
-                }]
+                },
+                y: {
+                    ticks: {
+                      beginAtZero: true,
+                      callback: function(value, index, values) {
+                        return value + '%';
+                      }
+                    }
+                }
             }
         }
     });
 </script>
-</div>
 </body>

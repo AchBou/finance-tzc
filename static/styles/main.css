@@ -1,12 +1,16 @@
 body{
-    background-color: #f0cfda;
+    background-color: #cfd1f0;
+}
+
+header{
+    margin: 20px;
 }
 
 .container{
-    margin: 20px;
+    margin: 30px;
     display: flex;
     flex-wrap: wrap;
-    gap: 10px 30px;
+    gap: 30px 30px;
     align-items: flex-start;
 }
 
@@ -14,10 +18,21 @@ table{
     width: 40%;
     border-collapse: collapse;
     margin: 0 30px;
+    border-radius: 3px;
 }
 
 th, td {
-  border: 2px solid #8d7979;
+    border: 2px solid #ebe0e0;
+    padding: 5px;
+    border-radius: inherit;
+}
+
+th:last-child, td:last-child {
+    background-color: #ebc7e5;
+}
+
+th{
+    padding: 7px;
 }
 
 .canvas{
