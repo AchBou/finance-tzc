@@ -1,9 +1,13 @@
 body{
-    background-color: #cfd1f0;
+    background-color: #a4d5f4;
 }
 
 header{
     margin: 20px;
+}
+
+h1{
+    text-align: center;
 }
 
 .container{
@@ -22,17 +26,18 @@ table{
 }
 
 th, td {
-    border: 2px solid #ebe0e0;
+    border: 2px solid #efeb98;
     padding: 5px;
     border-radius: inherit;
 }
 
 th:last-child, td:last-child {
-    background-color: #ebc7e5;
+    background-color: #9cd775;
 }
 
 th{
     padding: 7px;
+    color: #1470be;
 }
 
 .canvas{
