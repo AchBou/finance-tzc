@@ -8,43 +8,54 @@
         <div class="logo">
                 <img src="{{ url_for('static', filename='images/afriquia-gaz-logo.png') }}" alt="AFRIQUIA GAZ LOGO">
         </div>
-        <h1>Calcul de taux zéro coupon</h1>
+        <h1>Bootstrapping web application</h1>
     </header>
-    <div class="container">
-        <table class="table1">
-    <thead>
-        {% for c in columns %}
-            <th>{{ c }}</th>
-        {% endfor %}
-    </thead>
-    {% for row in data %}
-        <tr>
-            {% for value in row %}
-                <td>{{ value }}</td>
-            {% endfor %}
-        </tr>
-    {% endfor %}
-</table>
-        <table class="table2">
-        <thead>
-            {% for c in ['Maturité.Jour', 'Maturité','Tmp','Taux acturiel','taux ZC'] %}
-                <th>{{ c }}</th>
-            {% endfor %}
-        </thead>
-        {% for m in maturity %}
-            <tr>
-                <td>{{ m }}</td>
-                <td>{{ (m/365) | round(3)  }}</td>
-                <td>{{ tmp[loop.index0] |round(4) }}</td>
-                <td>{{ (ta[loop.index0]*100) |round(4)}}%</td>
-                <td class="cell-tzc">{{ (tzc[loop.index0]*100) |round(4)}}%</td>
-            </tr>
-        {% endfor %}
-    </table>
-        <div class="canvas"><canvas id="myChart"></canvas></div>
+    <div class="date-choice">
+            <p>Inserer une date</p>
+    <form action="/" method="POST">
+        <input type="date" name="data">
+        <button type="submit">Submit</button>
+    </form>
     </div>
+
+    {% if date != '' %}
+        <div class="container">
+            <table class="table1">
+                <thead>
+                    {% for c in columns %}
+                        <th>{{ c }}</th>
+                    {% endfor %}
+                </thead>
+                {% for row in data %}
+                    <tr>
+                        {% for value in row %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+            <table class="table2">
+                <thead>
+                    {% for c in ['Maturité.Jour', 'Maturité','Tmp','Taux acturiel','taux ZC'] %}
+                        <th>{{ c }}</th>
+                    {% endfor %}
+                </thead>
+                {% for m in maturity %}
+                    <tr>
+                        <td>{{ m }}</td>
+                        <td>{{ (m/365) | round(3)  }}</td>
+                        <td>{{ tmp[loop.index0] |round(4) }}</td>
+                        <td>{{ (ta[loop.index0]*100) |round(4)}}%</td>
+                        <td class="cell-tzc">{{ (tzc[loop.index0]*100) |round(4)}}%</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <div class="canvas"><canvas id="myChart"></canvas></div>
+        </div>
+    {% endif %}
 <script>
     const ctx = document.getElementById('myChart').getContext('2d');
+    {% if graph_data %}
     const myChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -75,5 +86,6 @@
             }
         }
     });
+    {% endif %}
 </script>
 </body>

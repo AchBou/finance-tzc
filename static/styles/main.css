@@ -1,5 +1,4 @@
 body{
-    background-color: #a4d5f4;
 }
 
 header{
@@ -7,9 +6,14 @@ header{
 }
 
 h1{
+    font-family: Calibri, serif;
     text-align: center;
 }
 
+.date-choice {
+    text-align: center;
+    font-size: 14px;
+}
 .container{
     margin: 30px;
     display: flex;
@@ -26,18 +30,17 @@ table{
 }
 
 th, td {
-    border: 2px solid #efeb98;
+    border: 2px solid black;
     padding: 5px;
     border-radius: inherit;
 }
 
 th:last-child, td:last-child {
-    background-color: #9cd775;
+    background-color: lightgrey;
 }
 
 th{
     padding: 7px;
-    color: #1470be;
 }
 
 .canvas{

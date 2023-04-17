@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import requests as requests
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -7,11 +7,13 @@ app = Flask(__name__)
 
 
 def scarp(url):
+    df = {}
     res = requests.get(url)
     soup = BeautifulSoup(res.content, 'html.parser')
-    table = soup.find_all('table')[0]
-    df = pd.read_html(str(table))[0]
-    df = df.drop(df.index[-1])
+    if soup.find_all('table'):
+        table = soup.find_all('table')[0]
+        df = pd.read_html(str(table))[0]
+        df = df.drop(df.index[-1])
     return df
 
 
@@ -19,17 +21,21 @@ def to_date(x):
     return pd.to_datetime(x, format='%d/%m/%Y')
 
 
-def load_data():
+def load_data(dd, mm, yyyy):
     # Code to load data from the internet
     url = "https://www.bkam.ma/Marches/Principaux-indicateurs/Marche-obligataire/Marche-des-bons-de-tresor/Marche" \
-          "-secondaire/Taux-de-reference-des-bons-du-tresor"
+          f"-secondaire/Taux-de-reference-des-bons-du-tresor?date={dd}%2F{mm}%2F{yyyy}"
     df = scarp(url)
-    df["Taux moyen pondéré"] = df["Taux moyen pondéré"].str.replace(',', '.').str.rstrip("%").astype(float)
-    df['Maturite'] = (to_date(df["Date d'échéance"]) - to_date(df['Date de la valeur'])).dt.days + 1
-    columns = df.columns
-    values = df.to_numpy()
-    return columns, values, df
-
+    print(type(df))
+    if type(df) is not dict:
+        print("entered")
+        df["Taux moyen pondéré"] = df["Taux moyen pondéré"].str.replace(',', '.').str.rstrip("%").astype(float)
+        df['Maturite'] = (to_date(df["Date d'échéance"]) - to_date(df['Date de la valeur'])).dt.days + 1
+        columns = df.columns
+        values = df.to_numpy()
+        return columns, values, df
+    print('didnt return')
+    return
 
 def taux_actuariel(maturites, taux_moyens_pond):
     taux_actuariels = []
@@ -118,17 +124,23 @@ def construct_graph_data(years, tzc):
     for i, year in enumerate(years):
         if year.is_integer():
             years_graph.append(year)
-            tzc_graph.append((tzc[i]*100))
+            tzc_graph.append((tzc[i] * 100))
     return years_graph, tzc_graph
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def hello_world():  # put application's code here
-    data = load_data()
-    c_data = calculate_data(data[2])
-    graph_data = construct_graph_data(c_data[1], c_data[4])
-    return render_template('index.html', columns=data[0], data=data[1],
-                           maturity=c_data[0], tmp=c_data[2], ta=c_data[3], tzc=c_data[4], graph_data=graph_data)
+    if request.method == 'POST':
+        # Process data from the form
+        date = request.form.get('data')
+        yyyy, mm, dd = date.split('-')
+        data = load_data(dd, mm, yyyy)
+        if data:
+            c_data = calculate_data(data[2])
+            graph_data = construct_graph_data(c_data[1], c_data[4])
+            return render_template('index.html', columns=data[0], data=data[1],
+                                   maturity=c_data[0], tmp=c_data[2], ta=c_data[3], tzc=c_data[4], graph_data=graph_data)
+    return render_template('index.html')
 
 
 if __name__ == '__main__':
