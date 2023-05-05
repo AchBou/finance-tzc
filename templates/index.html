@@ -1,6 +1,6 @@
 <head>
     <link rel="stylesheet" href="../static/styles/main.css">
-    <title>Helllloo</title>
+    <title>Bootstrapping web application</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -63,8 +63,8 @@
             datasets: [{
                 label: 'Taux Zero Coupon',
                 data: {{ graph_data[1]|tojson }},
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(77,77,77,0.2)',
+                borderColor: 'rgb(0,0,0)',
                 borderWidth: 1
             }]
         },
@@ -79,7 +79,7 @@
                     ticks: {
                       beginAtZero: true,
                       callback: function(value, index, values) {
-                        return value + '%';
+                        return value.toFixed(2) + '%';
                       }
                     }
                 }
