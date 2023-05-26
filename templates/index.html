@@ -13,7 +13,7 @@
     <div class="date-choice">
             <p>Inserer une date</p>
     <form action="/" method="POST">
-        <input type="date" name="data">
+        <input type="date" name="data" {% if date %}value="{{ date }}" {% endif %}>
         <button type="submit">Submit</button>
     </form>
     </div>
@@ -35,11 +35,14 @@
                 {% endfor %}
             </table>
             <table class="table2">
+                {% if maturity %}
                 <thead>
                     {% for c in ['Maturité.Jour', 'Maturité','Tmp','Taux acturiel','taux ZC'] %}
                         <th>{{ c }}</th>
                     {% endfor %}
                 </thead>
+                {% endif %}
+
                 {% for m in maturity %}
                     <tr>
                         <td>{{ m }}</td>

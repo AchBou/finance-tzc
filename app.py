@@ -26,9 +26,7 @@ def load_data(dd, mm, yyyy):
     url = "https://www.bkam.ma/Marches/Principaux-indicateurs/Marche-obligataire/Marche-des-bons-de-tresor/Marche" \
           f"-secondaire/Taux-de-reference-des-bons-du-tresor?date={dd}%2F{mm}%2F{yyyy}"
     df = scarp(url)
-    print(type(df))
     if type(df) is not dict:
-        print("entered")
         df["Taux moyen pondéré"] = df["Taux moyen pondéré"].str.replace(',', '.').str.rstrip("%").astype(float)
         df['Maturite'] = (to_date(df["Date d'échéance"]) - to_date(df['Date de la valeur'])).dt.days + 1
         columns = df.columns
@@ -129,16 +127,18 @@ def construct_graph_data(years, tzc):
 
 
 @app.route('/', methods=['GET', 'POST'])
-def hello_world():  # put application's code here
+def main():  # put application's code here
     if request.method == 'POST':
         # Process data from the form
         date = request.form.get('data')
+        print(date)
         yyyy, mm, dd = date.split('-')
         data = load_data(dd, mm, yyyy)
         if data:
             c_data = calculate_data(data[2])
             graph_data = construct_graph_data(c_data[1], c_data[4])
-            return render_template('index.html', columns=data[0], data=data[1],
+            print(c_data[0])
+            return render_template('index.html', columns=data[0], data=data[1], date=date,
                                    maturity=c_data[0], tmp=c_data[2], ta=c_data[3], tzc=c_data[4], graph_data=graph_data)
     return render_template('index.html')
 
