@@ -1,5 +1,12 @@
-body{
+*{
+    font-size: 18px;
+    font-weight: bold;
 }
+body{
+    background-color: #D9EEE1;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 
 header{
     margin: 20px;
@@ -8,35 +15,43 @@ header{
 h1{
     font-family: Calibri, serif;
     text-align: center;
+    font-size: 2em;
+    color: #77cef5;
 }
 
 .date-choice {
     text-align: center;
     font-size: 14px;
 }
+
+input, button{
+    padding: 10px;
+    border-radius: 5px;
+}
+
+button{
+    background-color: #77cef5;
+}
 .container{
     margin: 30px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px 30px;
-    align-items: flex-start;
 }
 
 table{
     width: 40%;
     border-collapse: collapse;
-    margin: 0 30px;
+    margin: 30px auto;
     border-radius: 3px;
 }
 
 th, td {
     border: 2px solid black;
-    padding: 5px;
+    padding: 10px;
     border-radius: inherit;
+    text-align: center;
 }
 
 th:last-child, td:last-child {
-    background-color: lightgrey;
+    background-color: #77cef5;
 }
 
 th{

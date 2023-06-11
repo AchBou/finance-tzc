@@ -27,7 +27,8 @@ def load_data(dd, mm, yyyy):
     if type(df) is not dict:
         df["Taux moyen pondéré"] = df["Taux moyen pondéré"].str.replace(',', '.').str.rstrip("%").astype(float)
         df['Maturite'] = (to_date(df["Date d'échéance"]) - to_date(df['Date de la valeur'])).dt.days + 1
-        columns = df.columns
+        columns = ["Date d'échéance", 'Transaction', 'Taux moyen pondéré',
+                   'Date de la valeur', 'Maturité (en jours)']
         values = df.to_numpy()
         return columns, values, df
     print('didnt return')
