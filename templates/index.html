@@ -66,27 +66,66 @@
             datasets: [{
                 label: 'Taux Zero Coupon',
                 data: {{ graph_data[1]|tojson }},
-                backgroundColor: 'rgba(77,77,77,0.2)',
-                borderColor: 'rgb(0,0,0)',
+                backgroundColor: '#7790f5',
+                borderColor: '#77cef5',
                 borderWidth: 1
             }]
         },
         options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Courbe des taux zéro coupon',
+                    color: '#000',
+                    font: {
+                        family: 'Times',
+                        size: 20,
+                        style: 'normal',
+                        lineHeight: 1.2
+                    },
+                },
+                legend:{
+                    position:'bottom'
+                }
+            },
             scales: {
-                x:  {
-                    ticks: {
-                        beginAtZero: true
+                    x:  {
+                        title:{
+                            display: true,
+                            text:'Maturité en année',
+                            color: '#000',
+                            font: {
+                                family: 'Times',
+                                size: 18,
+                                style: 'normal',
+                                lineHeight: 1.2
+                            },
+                        },
+                        ticks: {
+                            beginAtZero: true
+                        },
+                    },
+                    y: {
+                        title:{
+                            display: true,
+                            text:'taux zéro coupons',
+                            color: '#000',
+                            font: {
+                                family: 'Times',
+                                size: 20,
+                                style: 'normal',
+                                lineHeight: 1.2
+                            },
+                        },
+                        ticks: {
+                            beginAtZero: true,
+                            callback: function(value, index, values) {
+                                return value.toFixed(2) + '%';
+                            }
+                        }
                     }
                 },
-                y: {
-                    ticks: {
-                      beginAtZero: true,
-                      callback: function(value, index, values) {
-                        return value.toFixed(2) + '%';
-                      }
-                    }
-                }
-            }
+
         }
     });
     {% endif %}
